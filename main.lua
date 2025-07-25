@@ -32,7 +32,11 @@ domain = 3.5;
 
 --  the domain is multiplied times this when zooming, smaller numbers cause
 --  zooming to occur faster
-zoomSpeed = 0.98
+-- zoomSpeed = 0.98  -- removed, kj
+
+zoomSpeed = 0.9      -- added, kj
+panSpeed = 0.05
+scale = 1.5
 
 --  controls if the current zoomspeed is displayed
 displayZoomSpeed = true
@@ -52,7 +56,18 @@ function love.load(a)
     colorData()
 
     --  create the fractal shader from the shader program
-    shader = love.graphics.newShader("shader.frag")
+    --  shader = love.graphics.newShader("shader.frag")  -- removed, kj
+
+    local success, result = pcall(love.graphics.newShader, "shader.frag") 
+    -- added the above and the if statement following, kj
+
+    if not success then
+      print("Mandelbrot shader failed to compile:")
+      print(result)
+    else
+      print("Mandelbrot shader compiled successfully!")
+      shader = result
+    end   
 
     --  create the offscreen drawing canvas
     createCanvas()
@@ -80,9 +95,11 @@ function love.update(dt)
 
         --  are we zooming in or out?
         if love.mouse.isDown(1) then
-            domain = domain * zoomSpeed
+            domain = domain * zoomSpeed -- added, kj
+            scale = scale * zoomSpeed  -- zoom in
         elseif love.mouse.isDown(2) then
-            domain = domain / zoomSpeed
+            domain = domain / zoomSpeed -- added, kj
+            scale = scale / zoomSpeed  -- zoom out
         end
 
         --  need to set a new center so that this point stays at the
@@ -212,11 +229,14 @@ function drawFractal(width, height, drawCanvas, sendSize)
     print(width, height, xCenter, yCenter, domain)
     print(drawCanvas)
     print(fractalCanvas)
-    shader:send("window_width", width)
-    shader:send("window_height", height)
-    shader:send("x_center", xCenter)
-    shader:send("y_center", yCenter)
-    shader:send("domain", domain)
+    -- shader:send("window_width", width)     -- removed, kj
+    -- shader:send("window_height", height)
+    -- shader:send("x_center", xCenter)
+    -- shader:send("y_center", yCenter)
+    -- shader:send("domain", domain)
+    
+    shader:send("center", {xCenter, yCenter}) -- added, kj
+    shader:send("scale", scale)               -- added, kj
 
     --  draw the fractal to the drawCanvas using the shader by filling the
     --  canvas with a filled rectangle
@@ -262,7 +282,7 @@ end
 function sendColorPack(n)
     --  send the color_count (the length of the colorMap) to the shader, the
     --  colors themselves, and the backgroundColor of the colorMap
-    shader:send("color_count", table.maxn(colors[n + 1]["colorMap"]))
-    shader:sendColor("colors", unpack(colors[n + 1]["colorMap"]))
-    shader:sendColor("background_color", colors[n + 1]["backgroundColor"])
+    -- shader:send("color_count", table.maxn(colors[n + 1]["colorMap"]))  -- removed, kj
+    -- shader:sendColor("colors", unpack(colors[n + 1]["colorMap"]))
+    -- shader:sendColor("background_color", colors[n + 1]["backgroundColor"])
 end
