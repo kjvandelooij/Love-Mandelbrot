@@ -32,11 +32,12 @@ domain = 3.5;
 
 --  the domain is multiplied times this when zooming, smaller numbers cause
 --  zooming to occur faster
--- zoomSpeed = 0.98  -- removed, kj
+--  zoomSpeed = 0.98  -- removed, kj
 
 zoomSpeed = 0.9      -- added, kj
 panSpeed = 0.05
 scale = 1.5
+maxIter = 100 -- or 200 or more for better detail
 
 --  controls if the current zoomspeed is displayed
 displayZoomSpeed = true
@@ -236,7 +237,8 @@ function drawFractal(width, height, drawCanvas, sendSize)
     -- shader:send("domain", domain)
     
     shader:send("center", {xCenter, yCenter}) -- added, kj
-    shader:send("scale", scale)               -- added, kj
+    shader:send("scale", scale)               
+    shader:send("max_iter", maxIter)           
 
     --  draw the fractal to the drawCanvas using the shader by filling the
     --  canvas with a filled rectangle
