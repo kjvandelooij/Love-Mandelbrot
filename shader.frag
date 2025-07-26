@@ -4,6 +4,9 @@ extern vec2 center;
 extern float scale; 
 extern number max_iter;
 
+extern int color_count;
+extern vec4 colors[32];  // Support up to 32 colors in the palette
+
 vec2 complexSquare(vec2 z) {
     return vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y);
 }
@@ -29,11 +32,12 @@ vec4 effect(vec4 color, Image texture, vec2 pixel_coords, vec2 screen_coords) {
         z = complexAdd(complexSquare(z), c);
     }
 
-    // Simple coloring: black inside, color based on escape speed outside
     if (i == max_iter) {
-        return vec4(0.0, 0.0, 0.0, 1.0); // Inside Mandelbrot
+        return vec4(0.0, 0.0, 0.0, 1.0); // Inside set
     } else {
         number t = i / max_iter;
-        return vec4(t, t * t, 1.0 - t, 1.0); // Gradient: purple-ish
+        int index = int(floor(t * color_count));
+        index = int(clamp(index, 0, color_count - 1));
+        return colors[index];
     }
 }

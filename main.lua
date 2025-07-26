@@ -34,10 +34,19 @@ domain = 3.5;
 --  zooming to occur faster
 --  zoomSpeed = 0.98  -- removed, kj
 
-zoomSpeed = 0.9      -- added, kj
+zoomSpeed = 0.9       -- added, kj
 panSpeed = 0.05
 scale = 1.5
 maxIter = 100 -- or 200 or more for better detail
+
+local colorPack = {   -- added, kj
+    {1, 0, 0, 1},     -- red
+    {0, 1, 0, 1},     -- green
+    {0, 0, 1, 1},     -- blue
+    {1, 1, 0, 1},     -- yellow
+    {1, 0, 1, 1},     -- magenta
+    {0, 1, 1, 1},     -- cyan
+}
 
 --  controls if the current zoomspeed is displayed
 displayZoomSpeed = true
@@ -239,6 +248,8 @@ function drawFractal(width, height, drawCanvas, sendSize)
     shader:send("center", {xCenter, yCenter}) -- added, kj
     shader:send("scale", scale)               
     shader:send("max_iter", maxIter)           
+    shader:send("color_count", #colorPack)
+    shader:send("colors", unpack(colorPack))
 
     --  draw the fractal to the drawCanvas using the shader by filling the
     --  canvas with a filled rectangle
